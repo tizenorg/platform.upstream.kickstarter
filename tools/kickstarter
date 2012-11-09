@@ -57,16 +57,16 @@ def image_xml(root, img):
     s.append(cc)
     root.append(s)
 
-def create_xml(image_meta):
+def create_xml(image_meta, external_configs=[]):
     root = etree.Element("image-configs")
     if image_meta.has_key('Configurations'):
         for img in image_meta['Configurations']:
             image_xml(root,img)
     external = []
-    if self.external:
-        external = external + self.external
-    if self.image_meta.has_key('ExternalConfigs') and self.image_meta['ExternalConfigs']:
-        external = external + self.image_meta['ExternalConfigs']
+    if external_configs:
+        external = external + external_configs
+    if image_meta.has_key('ExternalConfigs') and image_meta['ExternalConfigs']:
+        external = external + image_meta['ExternalConfigs']
     for path in external:
         for f in os.listdir(path):
             if f.endswith('.yaml'):
