@@ -1,5 +1,4 @@
 ExternalConfigs: 
-    - netbook
 
 Default:
     Active: True

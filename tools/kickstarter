@@ -62,7 +62,12 @@ def create_xml(image_meta):
     if image_meta.has_key('Configurations'):
         for img in image_meta['Configurations']:
             image_xml(root,img)
-    for path in image_meta['ExternalConfigs']:
+    external = []
+    if self.external:
+        external = external + self.external
+    if self.image_meta.has_key('ExternalConfigs') and self.image_meta['ExternalConfigs']:
+        external = external + self.image_meta['ExternalConfigs']
+    for path in external:
         for f in os.listdir(path):
             if f.endswith('.yaml'):
                 fp = file('%s/%s' %(path, f), 'r')
@@ -98,11 +103,11 @@ if __name__ == '__main__':
         print "you need to provide meta files with --configs and --repos"
         sys.exit(1)
 
-    ks = KSWriter(options.configsfile, options.repofile, options.outdir, options.config, options.packages)
+    ks = KSWriter(options.configsfile, options.repofile, options.outdir, options.config, options.packages, options.external)
     ks.generate()
 
     if options.indexfile:
-        str = create_xml(ks.image_meta)
+        str = create_xml(ks.image_meta, options.external)
         f = open(options.indexfile, 'w')
         f.write(str)
         f.close()

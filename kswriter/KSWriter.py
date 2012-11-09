@@ -18,11 +18,12 @@ def mkdir_p(path):
         else: raise
 
 class KSWriter():
-    def __init__(self, configs=None, repos=None, outdir=".", config=None, packages=False):
+    def __init__(self, configs=None, repos=None, outdir=".", config=None, packages=False, external=[]):
         self.dist = None
         self.arch = None
         self.image_filename = os.path.abspath(os.path.expanduser(configs))
         self.outdir = outdir
+        self.external = external
         self.packages = packages
         self.config = config
         self.image_stream = file(self.image_filename, 'r')
@@ -152,8 +153,18 @@ class KSWriter():
                         self.process_files(conf, self.repos)
                     else:
                         print "%s is inactive, not generating %s at this time" %(img['Name'], img['FileName'] )
-        for path in self.image_meta['ExternalConfigs']:
+
+        external = []
+        if self.external:
+            external = external + self.external
+        if self.image_meta.has_key('ExternalConfigs') and self.image_meta['ExternalConfigs']:
+            external = external + self.image_meta['ExternalConfigs']
+
+        for path in external:
             external_config_dir = os.path.join(os.path.dirname(self.image_filename), path)
+            if not os.path.exists(external_config_dir):
+                external_config_dir = os.path.abspath(os.path.expanduser(path))
+
             for f in os.listdir(external_config_dir):
                 if f.endswith('.yaml'):
                     fp = file('%s/%s' %(external_config_dir, f), 'r')
