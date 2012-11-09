@@ -22,15 +22,24 @@ class KSWriter():
         self.dist = None
         self.arch = None
         self.image_filename = os.path.abspath(os.path.expanduser(configs))
-        self.repo_filename = repos
         self.outdir = outdir
         self.packages = packages
         self.config = config
         self.image_stream = file(self.image_filename, 'r')
-        self.repo_stream = file(self.repo_filename, 'r')
-        self.extra = {}
-        self.repo_meta = yaml.load(self.repo_stream)
         self.image_meta = yaml.load(self.image_stream)
+        self.extra = {}
+
+        self.repos = self.parse_repos(repos)
+
+    def parse_repos(self, repos):
+        prepos = []
+        for repo in repos:
+            repo_stream = file(repo, 'r')
+            repo_meta = yaml.load(repo_stream)
+            prepos = prepos + repo_meta['Repositories']
+
+        return prepos
+	
 
     def merge(*input):
         return list(reduce(set.union, input, set()))
@@ -129,19 +138,18 @@ class KSWriter():
 
     def generate(self):
         out = {}
-        repos = self.repo_meta['Repositories']
         if self.image_meta.has_key('Configurations'):
             for img in self.image_meta['Configurations']:
                 conf = self.parse(img)
                 if self.config:
                     if img.has_key('FileName') and self.config == img['FileName']:
                         print "Creating %s (%s.ks)" %(img['Name'], img['FileName'] )
-                        self.process_files(conf, repos)
+                        self.process_files(conf, self.repos)
                         break
                 else:
                     if conf.has_key('Active') and conf['Active'] :
                         print "Creating %s (%s.ks)" %(img['Name'], img['FileName'] )
-                        self.process_files(conf, repos)
+                        self.process_files(conf, self.repos)
                     else:
                         print "%s is inactive, not generating %s at this time" %(img['Name'], img['FileName'] )
         for path in self.image_meta['ExternalConfigs']:
@@ -159,12 +167,12 @@ class KSWriter():
                                 out['packages'] = conf['ExtraPackages']
                             else:
                                 print "Creating %s (%s.ks)" %(conf['Name'], conf['FileName'] )
-                                self.process_files(conf, repos)
+                                self.process_files(conf, self.repos)
                                 break
                     else:
                         if conf.has_key('Active') and conf['Active']:
                             print "Creating %s (%s.ks)" %(conf['Name'], conf['FileName'] )
-                            self.process_files(conf, repos)
+                            self.process_files(conf, self.repos)
                         else:
                             print "%s is inactive, not generate %s this time" %(conf['Name'], conf['FileName'] )
                 else:

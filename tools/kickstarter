@@ -81,8 +81,10 @@ if __name__ == '__main__':
                     help="configuration meta file")
     parser.add_option("-o", "--outdir", type="string", dest="outdir", default=".",
                     help="outdir")
-    parser.add_option("-r", "--repos", type="string", dest="repofile",
+    parser.add_option("-r", "--repos", action="append", type="string", dest="repofile",
                     help="repo meta file")
+    parser.add_option("-e", "--external", action="append", type="string", dest="external",
+                    help="Additional external configuration files")
     parser.add_option("-i", "--index", type="string", dest="indexfile",
                     help="generate index file")
     parser.add_option("-C", "--config", type="string", dest="config", default=None,
