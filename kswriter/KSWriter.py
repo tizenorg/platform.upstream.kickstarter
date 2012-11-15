@@ -68,28 +68,28 @@ class KSWriter():
         postscript = ""
         meta_root = os.path.dirname(self.image_filename)
         for scr in conf['PostScripts']:
-            if os.path.exists('%s/custom/scripts/%s.post' %(meta_root, scr)):
-                f = open('%s/custom/scripts/%s.post' %(meta_root, scr), 'r')
+            if os.path.exists('%s/scripts/%s.post' %(meta_root, scr)):
+                f = open('%s/scripts/%s.post' %(meta_root, scr), 'r')
                 postscript += f.read()
                 postscript += "\n"
                 f.close()
             else:
-                print '%s/custom/scripts/%s.post not found, skipping.' %(meta_root,scr )
+                print '%s/scripts/%s.post not found, skipping.' %(meta_root,scr )
 
         nochrootscript = ""
         for scr in conf['NoChrootScripts']:
-            if os.path.exists('%s/custom/scripts/%s.nochroot' %(meta_root,scr)):
-                f = open('%s/custom/scripts/%s.nochroot' %(meta_root, scr ), 'r')
+            if os.path.exists('%s/scripts/%s.nochroot' %(meta_root,scr)):
+                f = open('%s/scripts/%s.nochroot' %(meta_root, scr ), 'r')
                 nochrootscript += f.read()
                 nochrootscript += "\n"
                 f.close()
             else:
-                print '%s/custom/scripts/%s.nochroot not found, skipping.' %(meta_root, scr )
+                print '%s/scripts/%s.nochroot not found, skipping.' %(meta_root, scr )
 
         ptab = ""
         for g in [ plat, img ]:
             if g.has_key("Part"):
-                f = open("%s/custom/part/%s" %(meta_root, g['Part']) )
+                f = open("%s/partitions/%s" %(meta_root, g['Part']) )
                 ptab = f.read()
                 f.close()
 

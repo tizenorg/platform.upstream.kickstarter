@@ -43,7 +43,12 @@ desktop --autologinuser=${metadata.DefaultUser}  #slurp
 
 #end if
 #end if
+#if $metadata.has_key("UserGroups")
+user --name ${metadata.DefaultUser}  --groups ${metadata.UserGroups} --password '${metadata.DefaultUserPass}'
+#else
 user --name ${metadata.DefaultUser}  --groups audio,video --password '${metadata.DefaultUserPass}'
+#end if
+
 
 #set $options_global = ""
 #if $metadata.SaveRepos
