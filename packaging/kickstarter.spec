@@ -1,7 +1,7 @@
 %{!?python_sitelib: %define python_sitelib %(%{__python} -c "from distutils.sysconfig import get_python_lib; print get_python_lib()")}
 Name:       kickstarter
 Summary:	Create kickstart files for image creation
-Version:    0.16
+Version:    0.17
 Release:    1
 Group:      System/Base
 License:    GPLv2
