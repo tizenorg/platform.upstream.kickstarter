@@ -43,16 +43,18 @@ desktop --autologinuser=${metadata.DefaultUser}  #slurp
 
 #end if
 #end if
+#if $metadata.has_key("DefaultUser")
 #if $metadata.has_key("UserGroups")
 user --name ${metadata.DefaultUser}  --groups ${metadata.UserGroups} --password '${metadata.DefaultUserPass}'
 #else
 user --name ${metadata.DefaultUser}  --groups audio,video --password '${metadata.DefaultUserPass}'
 #end if
+#end if
 
 
 #set $options_global = ""
 #if $metadata.SaveRepos
-#set $options_global = "--save --debuginfo --source --gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-meego"
+#set $options_global = "--save --debuginfo --source"
 #end if
 #for $r in $metadata.Repos
 #for $rr in $repos
