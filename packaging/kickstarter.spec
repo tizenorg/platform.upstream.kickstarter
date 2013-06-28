@@ -8,7 +8,7 @@ License:    GPLv2
 BuildArch:  noarch
 URL:        http://www.tizen.org
 Source0:    %{name}-%{version}.tar.bz2
-Source1001: packaging/kickstarter.manifest
+Source1001: kickstarter.manifest
 Requires:   python-yaml
 Requires:   python-cheetah
 Requires:   python-lxml
@@ -41,7 +41,7 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %files
-%manifest kickstarter.manifest
+%manifest %{name}.manifest
 %defattr(-,root,root,-)
 %{_bindir}/*
 %{python_sitelib}/*
