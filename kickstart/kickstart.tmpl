@@ -7,6 +7,9 @@
 # kickstarter.py
 # ###############################################
 
+#if $metadata.has_key("Installerfw")
+installerfw "${metadata.Installerfw}"
+#end if
 lang ${metadata.Language}
 keyboard ${metadata.Keyboard}
 timezone --utc ${metadata.Timezone}
