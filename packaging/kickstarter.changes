@@ -1,3 +1,6 @@
+* Fri Jul 05 2013 Anas Nashif <anas.nashif@intel.com> accepted/tizen/20130520.095644@8d43804
+- Support installer framework plugins
+
 * Fri May 03 2013 Patrick McCarty <patrick.mccarty@linux.intel.com> 6f55a1a
 - Remove requirement for a default root password
 
