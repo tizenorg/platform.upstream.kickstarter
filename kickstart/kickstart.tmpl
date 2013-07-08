@@ -53,6 +53,15 @@ user --name ${metadata.DefaultUser}  --groups audio,video --password '${metadata
 #end if
 #end if
 
+#if $metadata.has_key("InstallerFrameworkPlugins")
+installerfw "#slurp
+#set sep = ''
+#for $p in $metadata.InstallerFrameworkPlugins
+$sep$p#slurp
+#set sep = ','
+#end for
+"
+#end if
 
 #set $options_global = ""
 #if $metadata.SaveRepos

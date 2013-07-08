@@ -3,8 +3,8 @@ Name:       kickstarter
 Summary:	Create kickstart files for image creation
 Version:    0.17
 Release:    1
-Group:      System/Base
-License:    GPLv2
+Group:      Base/Utilities
+License:    GPL-2.0
 BuildArch:  noarch
 URL:        http://www.tizen.org
 Source0:    %{name}-%{version}.tar.bz2
