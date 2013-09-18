@@ -1,3 +1,7 @@
+* Wed Sep 18 2013 Artem Bityutskiy <artem.bityutskiy@linux.intel.com> accepted/tizen/20130912.195922@c11dc5d
+- Start using new "installerfw_plugins" keyword instead of the depricated
+  "installerfw".
+
 * Fri Jul 05 2013 Anas Nashif <anas.nashif@intel.com> accepted/tizen/20130520.095644@8d43804
 - Support installer framework plugins
 
