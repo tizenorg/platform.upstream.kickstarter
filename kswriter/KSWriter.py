@@ -9,6 +9,15 @@ from urlparse import urlparse
 
 from kickstart import kickstart
 
+class KSMetaError(Exception):
+    """Exception to catch malformated meta YAML files """
+    def __init__(self, msg):
+        Exception.__init__(self)
+        self.msg = msg
+
+    def __str__(self):
+        return self.msg
+
 def mkdir_p(path):
     try:
         os.makedirs(path)
@@ -17,8 +26,21 @@ def mkdir_p(path):
             pass
         else: raise
 
+def yamlload_safe(fname):
+    """ Safer wrapper for yaml.load() """
+    try:
+        with file(fname) as f:
+            return yaml.load(f)
+
+    except IOError:
+        raise KSMetaError('cannot read meta file: %s' % fname)
+
+    except:
+        # should be YAML format issue
+        raise KSMetaError('format error of meta file: %s' % fname)
+
 class KSWriter():
-    def __init__(self, configs=None, repos=None, outdir=".", config=None, packages=False, external=[]):
+    def __init__(self, configs=None, repos=None, outdir=".", config=None, packages=False, external=None, targetdefs=None, target=None):
         self.dist = None
         self.arch = None
         self.image_filename = os.path.abspath(os.path.expanduser(configs))
@@ -26,27 +48,44 @@ class KSWriter():
         self.external = external
         self.packages = packages
         self.config = config
-        self.image_stream = file(self.image_filename, 'r')
-        self.image_meta = yaml.load(self.image_stream)
+        self.image_meta = yamlload_safe(self.image_filename)
         self.extra = {}
 
         self.repos = self.parse_repos(repos)
 
+        # parse and record target definitions
+        self.target = target
+        self.targetdefs = self.parse_targetdef(targetdefs)
+
     def parse_repos(self, repos):
         prepos = []
         for repo in repos:
-            repo_stream = file(repo, 'r')
-            repo_meta = yaml.load(repo_stream)
+            repo_meta = yamlload_safe(repo)
             prepos = prepos + repo_meta['Repositories']
 
         return prepos
-	
+
+    def parse_targetdef(self, targetdefs):
+        """ Parse the targets defs in YAML to list of dict.
+            Will join them if multiple files provided.
+            Once one wrong file found, raise exception to abort
+        """
+        if not targetdefs:
+            return []
+
+        all_defs = []
+        for tdef in targetdefs:
+            tmeta = yamlload_safe(tdef)
+
+            all_defs.extend(tmeta['Targets'])
+
+        return all_defs
 
     def merge(*input):
         return list(reduce(set.union, input, set()))
 
     def dump(self):
-        print yaml.dump(yaml.load(self.stream))
+        print yaml.dump(yamlload_safe(self.stream))
 
     def parse(self, img):
         conf = copy.copy(self.image_meta['Default'])
@@ -137,6 +176,22 @@ class KSWriter():
             f.write(a)
             f.close()
 
+    def _image_for_current_target(self, fname):
+        """ To check whether this image is belong to current
+            target, which is specifed by user
+        """
+
+        if not self.target or not self.targetdefs:
+            # if user doesn't specify them, skip the checking
+            return True
+
+        for tdef in self.targetdefs:
+            if self.target == tdef['Name'] and fname in tdef['Images']:
+                # found
+                return True
+
+        return False
+
     def generate(self):
         out = {}
         if self.image_meta.has_key('Configurations'):
@@ -167,8 +222,12 @@ class KSWriter():
 
             for f in os.listdir(external_config_dir):
                 if f.endswith('.yaml'):
-                    fp = file('%s/%s' %(external_config_dir, f), 'r')
-                    local = yaml.load(fp)
+
+                    if not self._image_for_current_target(f):
+                        # skip
+                        continue
+
+                    local = yamlload_safe('%s/%s' %(external_config_dir, f))
                     conf = self.parse(local)
                     if self.config:
                         if self.config == conf['FileName']:

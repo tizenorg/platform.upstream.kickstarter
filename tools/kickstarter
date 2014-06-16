@@ -1,8 +1,9 @@
 #!/usr/bin/python
 # Anas Nashif <anas.nashif@intel.com>
-import yaml,  sys
+
+import yaml, sys
 import re, os
-from kswriter import KSWriter
+from kswriter.KSWriter import KSWriter, KSMetaError, yamlload_safe
 
 import copy
 import time
@@ -70,8 +71,7 @@ def create_xml(image_meta, external_configs=[]):
     for path in external:
         for f in os.listdir(path):
             if f.endswith('.yaml'):
-                fp = file('%s/%s' %(path, f), 'r')
-                local = yaml.load(fp)
+                local = yamlload_safe('%s/%s' %(path, f))
                 conf = ks.parse(local)
                 if conf.has_key('Active') and conf['Active']:
                     image_xml(root,conf)
@@ -96,6 +96,10 @@ if __name__ == '__main__':
                     help="Limit to this configuration file")
     parser.add_option("-p", "--packages", action="store_true", dest="packages", default=False,
                     help="return list of packages to be installed for this configuration")
+    parser.add_option("-T", "--targetdef", action="append", type="string", dest="targetdefs",
+                    help="Targets meta file to specify images for corresponding build target")
+    parser.add_option("-t", "--target", type="string", dest="target", default=None,
+                    help="Specify build target to filter ks generation")
 
     (options, args) = parser.parse_args()
 
@@ -103,8 +107,12 @@ if __name__ == '__main__':
         print "you need to provide meta files with --configs and --repos"
         sys.exit(1)
 
-    ks = KSWriter(options.configsfile, options.repofile, options.outdir, options.config, options.packages, options.external)
-    ks.generate()
+    try:
+        ks = KSWriter(options.configsfile, options.repofile, options.outdir, options.config, options.packages, options.external, options.targetdefs, options.target)
+        ks.generate()
+    except KSMetaError as err:
+        print 'ERROR:', str(err)
+        sys.exit(1)
 
     if options.indexfile:
         str = create_xml(ks.image_meta, options.external)
