@@ -113,7 +113,7 @@ class KSWriter():
                 postscript += "\n"
                 f.close()
             else:
-                print '%s/scripts/%s.post not found, skipping.' %(meta_root,scr )
+                raise KSMetaError('%s/scripts/%s.post not found, aborting.' %(meta_root,scr ))
 
         nochrootscript = ""
         for scr in conf['NoChrootScripts']:
@@ -123,7 +123,7 @@ class KSWriter():
                 nochrootscript += "\n"
                 f.close()
             else:
-                print '%s/scripts/%s.nochroot not found, skipping.' %(meta_root, scr )
+                raise KSMetaError('%s/scripts/%s.nochroot not found, aborting.' %(meta_root, scr ))
 
         ptab = ""
         for g in [ plat, img ]:
