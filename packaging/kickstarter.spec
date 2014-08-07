@@ -33,7 +33,12 @@ CFLAGS="$RPM_OPT_FLAGS" %{__python} setup.py build
 
 %install
 rm -rf $RPM_BUILD_ROOT
+%if 0%{?suse_version}
+%{__python} setup.py install --root=$RPM_BUILD_ROOT --prefix=%{_prefix}
+%else
 %{__python} setup.py install --root=$RPM_BUILD_ROOT -O1 --prefix=%{_prefix}
+%endif
+
 
 %files
 %manifest %{name}.manifest
